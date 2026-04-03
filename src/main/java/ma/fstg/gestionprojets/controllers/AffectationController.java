@@ -31,7 +31,7 @@ public class AffectationController {
     }
 
     @GetMapping("/api/phases/{phaseId}/employes/{employeId}")
-    @Operation(sum//mary = "Détail affectation")
+    @Operation(summary = "Détail affectation")
     public ResponseEntity<AffectationResponse> getOne(@PathVariable Long phaseId, @PathVariable Long employeId) {
         return ResponseEntity.ok(service.getOne(phaseId, employeId));
     }
