@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FolderOpen, Plus, Search, Edit2, Trash2, X, Download, FileText, Eye } from 'lucide-react';
+import { FolderOpen, Plus, Search, Edit2, Trash2, X, Download, FileText, Link, ChevronDown, Monitor } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/axiosConfig';
 import { documentService } from '../services/documentService';
@@ -11,6 +11,7 @@ const Documents: React.FC = () => {
   const [projets, setProjets] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -18,6 +19,7 @@ const Documents: React.FC = () => {
   const [selected, setSelected] = useState<any>(null);
   const [form, setForm] = useState<any>({ code: '', libelle: '', description: '', typeDocument: '', chemin: '', projetId: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPathOptions, setShowPathOptions] = useState(false);
   const { hasRole } = useAuth();
   const canManageDocuments = hasRole(['ADMINISTRATEUR', 'ADMIN', 'CHEF_PROJET', 'DIRECTEUR', 'SECRETAIRE']);
 
@@ -108,6 +110,28 @@ const Documents: React.FC = () => {
     }
   };
 
+  const handleDownload = async (doc: any) => {
+    setDownloadingId(doc.id);
+    try {
+      if (doc.chemin && (doc.chemin.startsWith('http://') || doc.chemin.startsWith('https://'))) {
+        window.open(doc.chemin, '_blank');
+        toast.success('Le fichier externe a été ouvert dans un nouvel onglet.');
+        setDownloadingId(null);
+        return;
+      }
+
+      const filename = doc.chemin
+        ? doc.chemin.replace(/\\/g, '/').split('/').pop() || `${doc.code}.bin`
+        : `${doc.code}.bin`;
+      await documentService.download(doc.id, filename);
+      toast.success(`"${doc.libelle}" téléchargé avec succès !`);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Ce document n\'existe plus sur le serveur (vérifiez le chemin).');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   const filtered = documents.filter(d =>
     (d.libelle || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (d.code || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -140,9 +164,47 @@ const Documents: React.FC = () => {
           <option value="AUTRE">Autre</option>
         </select>
       </div>
-      <div>
-        <label className="block text-sm text-gray-400 mb-1">Chemin / URL du fichier</label>
-        <input type="text" className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-2 text-white outline-none focus:border-indigo-500" placeholder="ex: /docs/rapport.pdf" value={form.chemin} onChange={e => setForm({ ...form, chemin: e.target.value })} />
+      <div className="relative">
+        <label className="block text-sm font-medium text-gray-300 mb-2">Source du fichier</label>
+        
+        <div className="flex bg-[#1a1d29] border border-white/10 rounded-xl overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+          <div className="bg-white/5 px-3 flex items-center justify-center border-r border-white/10">
+            {form.chemin === 'GENERATED_PDF' ? <FileText size={18} className="text-rose-400" /> : <Monitor size={18} className="text-emerald-400" />}
+          </div>
+          <input 
+            type="text" 
+            className="flex-1 bg-transparent px-4 py-2.5 text-white outline-none w-full" 
+            placeholder="Ex: C:\..." 
+            value={form.chemin === 'GENERATED_PDF' ? 'Rapport PDF Dynamique (Généré par le système)' : form.chemin} 
+            onChange={e => setForm({ ...form, chemin: e.target.value })} 
+            onFocus={() => setShowPathOptions(true)}
+            onBlur={() => setTimeout(() => setShowPathOptions(false), 200)}
+          />
+          <button type="button" onClick={() => setShowPathOptions(!showPathOptions)} className="px-3 hover:bg-white/5 transition-colors border-l border-white/10 flex items-center justify-center">
+            <ChevronDown size={18} className="text-gray-400" />
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {showPathOptions && (
+            <motion.div 
+              initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+              className="absolute z-50 w-full mt-2 bg-[#1e2130] border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+            >
+              <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-white/5 border-b border-white/10">Création Automatique</div>
+              <button type="button" onClick={() => { setForm({ ...form, typeDocument: 'PDF', chemin: 'GENERATED_PDF' }); setShowPathOptions(false); }} className="w-full text-left flex flex-col px-4 py-2.5 hover:bg-white/5 transition-colors">
+                <span className="text-white text-sm font-medium flex items-center gap-2"><FileText size={14} className="text-rose-400" />Générer un Rapport PDF Automatique</span>
+                <span className="text-gray-500 text-xs truncate">Crée un PDF avec les données du projet, organisme, etc.</span>
+              </button>
+              
+              <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-white/5 border-t border-b border-white/10 mt-1">Lier un fichier Local existant sur le serveur</div>
+              <button type="button" onClick={() => { setForm({ ...form, typeDocument: 'WORD', chemin: 'C:\\Projets\\Rapport.docx' }); setShowPathOptions(false); }} className="w-full text-left flex flex-col px-4 py-2.5 hover:bg-white/5 transition-colors">
+                <span className="text-white text-sm font-medium flex items-center gap-2"><Monitor size={14} className="text-emerald-400" />Renseigner un chemin local</span>
+                <span className="text-gray-500 text-xs truncate">Tapez manuellement (ex: C:\Mes_Fichiers\doc.pdf)</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       {showProjet && (
         <div className="md:col-span-2">
@@ -227,11 +289,16 @@ const Documents: React.FC = () => {
                   <td className="py-4 px-4 text-sm text-text-muted truncate max-w-[200px]">{doc.chemin || '—'}</td>
                   <td className="py-4 px-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {doc.chemin && (
-                        <a href={doc.chemin} target="_blank" rel="noopener noreferrer" className="p-2 text-emerald-400 hover:bg-emerald-400/20 rounded-lg transition-colors" title="Télécharger / Ouvrir">
-                          <Download size={15} />
-                        </a>
-                      )}
+                      <button
+                        onClick={() => handleDownload(doc)}
+                        disabled={downloadingId === doc.id}
+                        className="p-2 text-emerald-400 hover:bg-emerald-400/20 rounded-lg transition-colors disabled:opacity-50"
+                        title="Télécharger"
+                      >
+                        {downloadingId === doc.id
+                          ? <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+                          : <Download size={15} />}
+                      </button>
                       {canManageDocuments && (
                         <>
                           <button onClick={() => openEdit(doc)} className="p-2 text-indigo-400 hover:bg-indigo-400/20 rounded-lg transition-colors" title="Modifier"><Edit2 size={15} /></button>

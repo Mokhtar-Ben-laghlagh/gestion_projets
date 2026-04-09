@@ -15,8 +15,10 @@ import Affectations from './pages/Affectations';
 import Profils from './pages/Profils';
 import Documents from './pages/Documents';
 import Reporting from './pages/Reporting';
+import ChangePassword from './pages/ChangePassword';
 import NotFound from './pages/NotFound';
 import AccessDenied from './pages/AccessDenied';
+
 
 function App() {
   return (
@@ -52,6 +54,7 @@ function App() {
               <Route path="/affectations" element={<Affectations />} />
               <Route path="/livrables" element={<Livrables />} />
               <Route path="/documents" element={<Documents />} />
+              <Route path="/change-password" element={<ChangePassword />} />
 
               {/* Page 403 */}
               <Route path="/access-denied" element={<AccessDenied />} />
