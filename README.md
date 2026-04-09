@@ -94,7 +94,9 @@ L'interface web sera disponible à l'adresse indiquée (généralement `http://l
 
 
 
-https://github.com/user-attachments/assets/19a79289-7881-47fe-8873-481ef1b256c4
+
+https://github.com/user-attachments/assets/ad786160-d63a-4e75-b14a-756dd271176b
+
 
 
 
