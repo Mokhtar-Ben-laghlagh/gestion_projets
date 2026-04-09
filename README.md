@@ -90,14 +90,24 @@ npm run dev
 
 L'interface web sera disponible à l'adresse indiquée (généralement `http://localhost:5173`).
 
+## 📽️ Démonstration video 
+
+
+
+https://github.com/user-attachments/assets/19a79289-7881-47fe-8873-481ef1b256c4
+
+
+
 ## 📚 Documentation de l'API
 
 L'application expose une interface Swagger pour tester et comprendre les endpoints REST.
 Une fois le backend lancé, accédez à la documentation via :
-**[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)**
+**[http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)**
 
 ## 🛡️ Sécurité
 
 L'application utilise une authentification basée sur les tokens JWT.
 Pendant le processus d'authentification (`/authentication/login`), un token est délivré et doit être transmis dans l'en-tête `Authorization` (`Bearer <token>`) des requêtes suivantes sécurisées.
 L'accès aux ressources est contraint par les rôles gérés via Spring Security et appliqués dynamiquement tant du côté serveur que de l'interface client.
+
+
