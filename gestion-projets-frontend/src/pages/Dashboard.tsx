@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
           setData(response.data);
         } else {
           // Employee dashboard: fetch phases and livrables accessible to this user
-          const [phasesRes, projetsRes] = await Promise.allSettled([
+          const [, projetsRes] = await Promise.allSettled([
             api.get('/projets'),
             api.get('/projets'),
           ]);

@@ -4,9 +4,10 @@ import { motion } from 'framer-motion';
 import {
   LayoutDashboard, FolderKanban, Users, Building2,
   FileCheck2, CreditCard, UserCheck, ClipboardList,
-  Shield, FolderOpen, BarChart3, LogOut
+  Shield, FolderOpen, BarChart3, LogOut, KeyRound
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+
 
 const Sidebar: React.FC = () => {
   const { hasRole, logout, user } = useAuth();
@@ -36,6 +37,12 @@ const Sidebar: React.FC = () => {
       items: [
         { name: 'Factures', path: '/factures', icon: <CreditCard size={18} />, roles: ['ADMINISTRATEUR', 'ADMIN', 'DIRECTEUR', 'COMPTABLE'] },
         { name: 'Reporting', path: '/reporting', icon: <BarChart3 size={18} />, roles: ['ADMINISTRATEUR', 'ADMIN', 'DIRECTEUR', 'COMPTABLE'] },
+      ]
+    },
+    {
+      label: 'Mon Compte',
+      items: [
+        { name: 'Changer mot de passe', path: '/change-password', icon: <KeyRound size={18} />, roles: ['ALL'] },
       ]
     }
   ];
