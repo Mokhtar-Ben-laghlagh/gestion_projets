@@ -24,6 +24,12 @@ public class AffectationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(phaseId, employeId, r));
     }
 
+    @GetMapping("/api/affectations")
+    @Operation(summary = "Toutes les affectations autorisées")
+    public ResponseEntity<List<AffectationResponse>> getAll() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
     @GetMapping("/api/phases/{phaseId}/employes")
     @Operation(summary = "Employés d'une phase")
     public ResponseEntity<List<AffectationResponse>> getByPhase(@PathVariable Long phaseId) {

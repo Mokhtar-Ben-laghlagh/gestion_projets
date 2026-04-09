@@ -42,11 +42,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(c -> c.disable())
+        http.cors(org.springframework.security.config.Customizer.withDefaults())
+                .csrf(c -> c.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/employes/**")
+                            .hasAnyRole("ADMINISTRATEUR", "ADMIN", "CHEF_PROJET", "DIRECTEUR", "EMPLOYE", "SECRETAIRE", "COMPTABLE", "TECHNICIEN", "INGENIEUR")
                         .requestMatchers("/api/employes/**").hasAnyRole("ADMINISTRATEUR", "ADMIN")
                         .requestMatchers("/api/organismes/**").hasAnyRole("SECRETAIRE", "DIRECTEUR", "ADMIN", "ADMINISTRATEUR")
                         .requestMatchers("/api/factures/**").hasAnyRole("COMPTABLE", "DIRECTEUR", "ADMIN", "ADMINISTRATEUR")

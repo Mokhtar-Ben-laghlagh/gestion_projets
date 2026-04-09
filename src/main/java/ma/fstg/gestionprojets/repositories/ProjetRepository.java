@@ -17,7 +17,15 @@ public interface ProjetRepository extends JpaRepository<Projet, Long> {
 
     boolean existsByCode(String code);
 
-    List<Projet> findByOrganismeId(Long orgId);
+    List<Projet> findByOrganismeId(Long organismeId);
+    
+    // Pour l'isolation des Chefs de Projet
+    @Query("SELECT p FROM Projet p WHERE p.chefProjet.login = :login")
+    List<Projet> fetchProjetsForChef(@Param("login") String login);
+    
+    // Pour l'isolation des Employés via l'affectation sur des phases
+    @Query("SELECT DISTINCT p FROM Projet p JOIN p.phases ph JOIN ph.affectations a WHERE a.employe.login = :login")
+    List<Projet> fetchProjetsForEmploye(@Param("login") String login);
 
     List<Projet> findByChefProjetId(Long chefId);
 

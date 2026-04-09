@@ -22,4 +22,10 @@ public interface PhaseRepository extends JpaRepository<Phase, Long> {
 
     @Query("SELECT COALESCE(SUM(p.montant),0) FROM Phase p WHERE p.projet.id = :id")
     Double sumMontantByProjetId(@Param("id") Long id);
+
+    @Query("SELECT p FROM Phase p WHERE p.projet.chefProjet.login = :login")
+    List<Phase> fetchPhasesForChef(@Param("login") String login);
+
+    @Query("SELECT DISTINCT p FROM Phase p JOIN p.affectations a WHERE a.employe.login = :login")
+    List<Phase> fetchPhasesForEmploye(@Param("login") String login);
 }

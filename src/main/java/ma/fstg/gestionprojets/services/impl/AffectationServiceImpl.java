@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 @Service @RequiredArgsConstructor @Transactional
 public class AffectationServiceImpl implements AffectationService {
     private final AffectationRepository repo;
@@ -34,8 +36,29 @@ public class AffectationServiceImpl implements AffectationService {
         return toResp(repo.save(a));
     }
     @Transactional(readOnly=true) public AffectationResponse getOne(Long phaseId, Long empId) { return toResp(repo.findById(new AffectationId(empId, phaseId)).orElseThrow(() -> new ResourceNotFoundException("Affectation introuvable"))); }
-    @Transactional(readOnly=true) public List<AffectationResponse> getByPhase(Long pId) { return repo.findByPhaseId(pId).stream().map(this::toResp).collect(Collectors.toList()); }
+    @Transactional(readOnly=true) public List<AffectationResponse> getByPhase(Long pId) { 
+        return getAll().stream().filter(a -> a.getPhaseId() != null && a.getPhaseId().equals(pId)).collect(Collectors.toList()); 
+    }
     @Transactional(readOnly=true) public List<AffectationResponse> getByEmploye(Long eId) { return repo.findByEmployeId(eId).stream().map(this::toResp).collect(Collectors.toList()); }
+    
+    @Transactional(readOnly = true)
+    public List<AffectationResponse> getAll() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String login = auth.getName();
+        boolean isAdminOrDir = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMINISTRATEUR") || a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_DIRECTEUR") || a.getAuthority().equals("ROLE_SECRETAIRE") || a.getAuthority().equals("ROLE_COMPTABLE"));
+        boolean isChefProjet = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CHEF_PROJET"));
+        
+        List<Affectation> data;
+        if (isAdminOrDir) {
+            data = repo.findAll();
+        } else if (isChefProjet) {
+            data = repo.fetchAffectationsForChefProjet(login);
+        } else {
+            data = repo.fetchAffectationsForEmploye(login);
+        }
+        return data.stream().map(this::toResp).collect(Collectors.toList());
+    }
+
     public void delete(Long phaseId, Long empId) { AffectationId aid = new AffectationId(empId, phaseId); if (!repo.existsById(aid)) throw new ResourceNotFoundException("Affectation introuvable"); repo.deleteById(aid); }
     private AffectationResponse toResp(Affectation a) { AffectationResponse r = new AffectationResponse(); r.setEmployeId(a.getEmploye().getId()); r.setPhaseId(a.getPhase().getId()); r.setEmployeNom(a.getEmploye().getNom()); r.setEmployePrenom(a.getEmploye().getPrenom()); r.setEmployeMatricule(a.getEmploye().getMatricule()); r.setPhaseLibelle(a.getPhase().getLibelle()); r.setDateDebut(a.getDateDebut()); r.setDateFin(a.getDateFin()); r.setDescription(a.getDescription()); r.setRole(a.getRole()); r.setStatut(a.getStatut()); return r; }
 }

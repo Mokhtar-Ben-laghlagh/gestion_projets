@@ -7,5 +7,6 @@ public interface LivrableService {
     LivrableResponse update(Long id, LivrableRequest req);
     LivrableResponse getById(Long id);
     List<LivrableResponse> getByPhase(Long phaseId);
+    List<LivrableResponse> getAll();
     void delete(Long id);
 }

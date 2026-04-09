@@ -8,5 +8,6 @@ public interface AffectationService {
     AffectationResponse getOne(Long phaseId, Long employeId);
     List<AffectationResponse> getByPhase(Long phaseId);
     List<AffectationResponse> getByEmploye(Long employeId);
+    List<AffectationResponse> getAll();
     void delete(Long phaseId, Long employeId);
 }

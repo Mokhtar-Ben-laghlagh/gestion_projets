@@ -24,6 +24,12 @@ public class DocumentProjetController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(projetId, r));
     }
 
+    @GetMapping("/api/documents")
+    @Operation(summary = "Tous les documents autorisés")
+    public ResponseEntity<List<DocumentProjetResponse>> getAll() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
     @GetMapping("/api/projets/{projetId}/documents")
     @Operation(summary = "Documents d'un projet")
     public ResponseEntity<List<DocumentProjetResponse>> getByProjet(@PathVariable Long projetId) {

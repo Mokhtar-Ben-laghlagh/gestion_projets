@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service @RequiredArgsConstructor @Transactional
 public class PhaseServiceImpl implements PhaseService {
@@ -43,7 +45,39 @@ public class PhaseServiceImpl implements PhaseService {
     }
 
     @Transactional(readOnly = true) public PhaseResponse getById(Long id) { return toResponse(findById(id)); }
-    @Transactional(readOnly = true) public List<PhaseResponse> getByProjet(Long pId) { return phaseRepo.findByProjetId(pId).stream().map(this::toResponse).collect(Collectors.toList()); }
+    @Transactional(readOnly = true) public List<PhaseResponse> getByProjet(Long pId) { 
+        return getAll().stream().filter(p -> p.getProjetId() != null && p.getProjetId().equals(pId)).collect(Collectors.toList()); 
+    }
+    
+    @Transactional(readOnly = true) 
+    public List<PhaseResponse> getMyPhases(String login) {
+        return phaseRepo.fetchPhasesForEmploye(login).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+    
+    @Transactional(readOnly = true)
+    public List<PhaseResponse> getAll() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String login = auth.getName();
+        boolean isAdminOrDir = auth.getAuthorities().stream().anyMatch(a -> 
+            a.getAuthority().equals("ROLE_ADMINISTRATEUR") || 
+            a.getAuthority().equals("ROLE_ADMIN") || 
+            a.getAuthority().equals("ROLE_DIRECTEUR") ||
+            a.getAuthority().equals("ROLE_SECRETAIRE") ||
+            a.getAuthority().equals("ROLE_COMPTABLE"));
+        boolean isChefProjet = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CHEF_PROJET"));
+        
+        List<Phase> data;
+        if (isAdminOrDir) {
+            data = phaseRepo.findAll();
+        } else if (isChefProjet) {
+            data = phaseRepo.fetchPhasesForChef(login);
+        } else {
+            data = phaseRepo.fetchPhasesForEmploye(login);
+        }
+        return data.stream().map(this::toResponse).collect(Collectors.toList());
+    }
 
     public PhaseResponse updateRealisation(Long id, boolean etat) { Phase p = findById(id); p.setEtatRealisation(etat); return toResponse(phaseRepo.save(p)); }
     public PhaseResponse updateFacturation(Long id, boolean etat) {

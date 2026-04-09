@@ -8,6 +8,8 @@ public interface PhaseService {
     PhaseResponse update(Long id, PhaseRequest req);
     PhaseResponse getById(Long id);
     List<PhaseResponse> getByProjet(Long projetId);
+    List<PhaseResponse> getMyPhases(String login);
+    List<PhaseResponse> getAll();
     PhaseResponse updateRealisation(Long id, boolean etat);
     PhaseResponse updateFacturation(Long id, boolean etat);
     PhaseResponse updatePaiement(Long id, boolean etat);
