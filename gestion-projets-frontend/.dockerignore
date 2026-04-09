@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-ssr
+*.local
+.npm
+.yarn
+.git
+.DS_Store
+.env*

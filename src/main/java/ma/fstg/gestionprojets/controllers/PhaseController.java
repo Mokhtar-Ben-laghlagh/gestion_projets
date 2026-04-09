@@ -8,7 +8,9 @@ import ma.fstg.gestionprojets.dto.request.*;
 import ma.fstg.gestionprojets.dto.response.PhaseResponse;
 import ma.fstg.gestionprojets.services.PhaseService;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 
 import java.util.List;
 
@@ -28,6 +30,26 @@ public class PhaseController {
     @Operation(summary = "Phases d'un projet")
     public ResponseEntity<List<PhaseResponse>> getByProjet(@PathVariable Long projetId) {
         return ResponseEntity.ok(service.getByProjet(projetId));
+    }
+
+    @GetMapping("/api/phases/me")
+    @Operation(summary = "Phases assignées à l'employé connecté")
+    public ResponseEntity<List<PhaseResponse>> getMyPhases(Principal principal) {
+        // 'principal.getName()' renvoie le champ 'login' de l'utilisateur connecté via JWT
+        return ResponseEntity.ok(service.getMyPhases(principal.getName()));
+    }
+
+    @GetMapping("/api/phases")
+    @Operation(summary = "Toutes les phases autorisées")
+    public ResponseEntity<List<PhaseResponse>> getAllPhasesGlobally() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
+    @GetMapping("/api/phases/all")
+    @Operation(summary = "Toutes les phases existantes (Admin seulement)")
+    @PreAuthorize("hasAnyRole('ADMINISTRATEUR', 'ADMIN', 'CHEF_PROJET', 'DIRECTEUR')")
+    public ResponseEntity<List<PhaseResponse>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/api/phases/{id}")

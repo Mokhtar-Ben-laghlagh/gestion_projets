@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Service @RequiredArgsConstructor @Transactional
 public class ProjetServiceImpl implements ProjetService {
@@ -49,7 +51,29 @@ public class ProjetServiceImpl implements ProjetService {
     }
 
     @Transactional(readOnly = true) public ProjetResponse getById(Long id) { return toResp(find(id)); }
-    @Transactional(readOnly = true) public List<ProjetResponse> getAll() { return projetRepo.findAll().stream().map(this::toResp).collect(Collectors.toList()); }
+    
+    @Transactional(readOnly = true) 
+    public List<ProjetResponse> getAll() { 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String login = auth.getName();
+        boolean isAdminOrDir = auth.getAuthorities().stream().anyMatch(a -> 
+            a.getAuthority().equals("ROLE_ADMINISTRATEUR") || 
+            a.getAuthority().equals("ROLE_ADMIN") || 
+            a.getAuthority().equals("ROLE_DIRECTEUR") ||
+            a.getAuthority().equals("ROLE_SECRETAIRE") ||
+            a.getAuthority().equals("ROLE_COMPTABLE"));
+        boolean isChefProjet = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CHEF_PROJET"));
+        
+        List<Projet> data;
+        if (isAdminOrDir) {
+            data = projetRepo.findAll();
+        } else if (isChefProjet) {
+            data = projetRepo.fetchProjetsForChef(login);
+        } else {
+            data = projetRepo.fetchProjetsForEmploye(login);
+        }
+        return data.stream().map(this::toResp).collect(Collectors.toList()); 
+    }
 
     @Transactional(readOnly = true)
     public ProjetResumeResponse getResume(Long id) {

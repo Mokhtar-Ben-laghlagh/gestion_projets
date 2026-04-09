@@ -24,6 +24,12 @@ public class LivrableController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(phaseId, r));
     }
 
+    @GetMapping("/api/livrables")
+    @Operation(summary = "Tous les livrables autorisés")
+    public ResponseEntity<List<LivrableResponse>> getAll() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
     @GetMapping("/api/phases/{phaseId}/livrables")
     @Operation(summary = "Livrables d'une phase")
     public ResponseEntity<List<LivrableResponse>> getByPhase(@PathVariable Long phaseId) {

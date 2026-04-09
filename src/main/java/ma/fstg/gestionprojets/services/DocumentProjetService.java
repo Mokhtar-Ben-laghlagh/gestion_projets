@@ -7,5 +7,6 @@ public interface DocumentProjetService {
     DocumentProjetResponse update(Long id, DocumentProjetRequest req);
     DocumentProjetResponse getById(Long id);
     List<DocumentProjetResponse> getByProjet(Long projetId);
+    List<DocumentProjetResponse> getAll();
     void delete(Long id);
 }

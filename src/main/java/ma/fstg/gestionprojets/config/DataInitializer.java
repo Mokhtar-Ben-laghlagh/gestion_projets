@@ -25,6 +25,8 @@ public class DataInitializer implements CommandLineRunner {
         createProfil("COMPTABLE", "Comptable");
         createProfil("TECHNICIEN", "Technicien");
         createProfil("INGENIEUR", "Ingénieur");
+        createProfil("EMPLOYE", "Employé");
+
         if (!empRepo.existsByLogin("admin")) {
             Profil p = profilRepo.findByCode("ADMINISTRATEUR").orElseThrow();
             empRepo.save(Employe.builder().matricule("ADM001").nom("Admin").prenom("Système").login("admin").email("admin@gestionprojets.ma").password(encoder.encode("admin123")).profil(p).actif(true).build());
