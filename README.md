@@ -28,6 +28,7 @@ gestion-projets/
 ├── pom.xml                                <-- Maven configuration
 └── docker-compose.yml                     <-- Docker orchestration
 ```
+![SgJju](https://github.com/user-attachments/assets/cbd5c957-267d-4eae-bda4-e3b6effa20fc)
 
 
 
