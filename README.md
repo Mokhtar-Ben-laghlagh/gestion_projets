@@ -11,6 +11,24 @@ Une application "Full-Stack" complète pour la gestion et le suivi des projets. 
 - **Sécurité et Contrôle d'Accès (RBAC)** : Authentification via JWT. Séparation des droits entre administrateurs/managers et utilisateurs standards (employés).
 - **Interface Utilisateur Moderne** : Design réactif et animé offrant une excellente expérience utilisateur.
 
+## 🏗️Architecture du projet 
+```
+gestion-projets/
+├── src/main/java/ma/fstg/gestionprojets/  <-- Backend logic
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── entities/
+│   └── dto/
+├── gestion-projets-frontend/              <-- Frontend (React)
+│   ├── src/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   └── services/
+├── pom.xml                                <-- Maven configuration
+└── docker-compose.yml                     <-- Docker orchestration
+```
+
 ## 🛠️ Technologies Utilisées
 
 ### Back-End (API Rest)
@@ -24,6 +42,8 @@ Une application "Full-Stack" complète pour la gestion et le suivi des projets. 
 - **Sécurité** : JSON Web Token (JWT) pour l'authentification
 - **Documentation** : Swagger OpenAPI & SpringDoc
 - **Outils** : Maven, Lombok
+
+
 
 ### Front-End (Client)
 - **React 19**
