@@ -12,6 +12,10 @@ Une application "Full-Stack" complète pour la gestion et le suivi des projets. 
 - **Interface Utilisateur Moderne** : Design réactif et animé offrant une excellente expérience utilisateur.
 
 ## 🏗️Architecture du projet 
+
+![SgJju](https://github.com/user-attachments/assets/cbd5c957-267d-4eae-bda4-e3b6effa20fc)
+
+
 ```
 gestion-projets/
 ├── src/main/java/ma/fstg/gestionprojets/  <-- Backend logic
@@ -28,7 +32,6 @@ gestion-projets/
 ├── pom.xml                                <-- Maven configuration
 └── docker-compose.yml                     <-- Docker orchestration
 ```
-![SgJju](https://github.com/user-attachments/assets/cbd5c957-267d-4eae-bda4-e3b6effa20fc)
 
 
 
