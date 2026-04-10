@@ -29,6 +29,9 @@ gestion-projets/
 └── docker-compose.yml                     <-- Docker orchestration
 ```
 
+![0YmLH](https://github.com/user-attachments/assets/86886dd6-2a33-401d-bf7f-bed9e5b32628)
+
+
 ## 🛠️ Technologies Utilisées
 
 ### Back-End (API Rest)
