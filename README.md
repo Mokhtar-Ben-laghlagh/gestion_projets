@@ -122,7 +122,10 @@ L'interface web sera disponible à l'adresse indiquée (généralement `http://l
 
 
 
-https://github.com/user-attachments/assets/ad786160-d63a-4e75-b14a-756dd271176b
+
+
+https://github.com/user-attachments/assets/34d2b08f-4812-448c-aaf0-1128140c39bf
+
 
 
 
